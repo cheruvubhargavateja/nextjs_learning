@@ -6,7 +6,7 @@ import React, { useState } from "react";
 
 export default function SignUp() {
   const [user, setUser] = useState({
-    userName: "",
+    username: "",
     email: "",
     password: "",
   });
@@ -18,15 +18,36 @@ export default function SignUp() {
     setUser({ ...user, [name]: value });
   };
 
-  const handleSubmit = (e: any) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
+
+    try {
+      const response = await fetch('/api/users/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(user),
+      });
+
+      if (response.ok) {
+        // Request was successful
+        console.log('Data sent successfully', response);
+        setUser({
+          username: "",
+          email: "",
+          password: "",
+        })
+        navigate.push('/home')
+      } else {
+        // Handle errors if the request was not successful
+        console.error('Error sending data');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+
     console.log(user);
-    setUser({
-      userName: "",
-      email: "",
-      password: "",
-    })
-    navigate.push('/home')
   };
 
   return (
@@ -43,15 +64,15 @@ export default function SignUp() {
           <div className="mt-10 grid grid-cols-1 gap-x-6 gap-y-8 sm:grid-cols-6">
             <div className="sm:col-span-4">
               <label className="block text-sm font-medium leading-6 text-gray-900">
-                Username
+                username
               </label>
               <div className="mt-2">
                 <div className="flex rounded-md shadow-sm ring-1 ring-inset ring-gray-300 focus-within:ring-2 focus-within:ring-inset focus-within:ring-indigo-600 sm:max-w-md">
                   <input
                     type="text"
-                    name="userName"
+                    name="username"
                     id="username"
-                    value={user.userName}
+                    value={user.username}
                     onChange={handleChange}
                     className="block flex-1 border-0 bg-transparent py-1.5 pl-1 text-gray-900 placeholder:text-gray-400 focus:ring-0 sm:text-sm sm:leading-6"
                     placeholder="Enter your username"
